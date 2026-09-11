@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  background: #05070a;
+  color: #e6edf3;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Slider style */
+input[type='range'] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 4px;
+  background: #1f2937;
+  border-radius: 999px;
+  outline: none;
+}
+input[type='range']::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #22d3ee;
+  cursor: pointer;
+  border: 2px solid #0b0f14;
+  box-shadow: 0 0 8px #22d3ee88;
+}
+input[type='range']::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #22d3ee;
+  cursor: pointer;
+  border: 2px solid #0b0f14;
+}
+
+.showroom {
+  background:
+    radial-gradient(ellipse at 50% 20%, #101822 0%, #05070a 60%, #000 100%);
+}
+
+.led-canvas {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.pixel-mask {
+  pointer-events: none;
+  mix-blend-mode: multiply;
+}
+
+.crt-vignette {
+  pointer-events: none;
+  box-shadow: inset 0 0 200px rgba(0,0,0,0.85);
+}
+
+/* Hide scrollbars inside control panel but keep functional */
+.thin-scroll::-webkit-scrollbar { width: 6px; }
+.thin-scroll::-webkit-scrollbar-thumb { background: #1f2937; border-radius: 3px; }
