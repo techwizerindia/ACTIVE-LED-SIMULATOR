@@ -1,11 +1,12 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// Repo name on GitHub — the site is served under this path on GitHub Pages.
-const REPO = 'ACTIVE-LED-SIMULATOR';
+// With a custom domain (e.g. led.techwizer.in) the site is served from root.
+// Set VITE_BASE=/ACTIVE-LED-SIMULATOR/ if you go back to the github.io URL.
+const base = process.env.VITE_BASE ?? '/';
 
-export default defineConfig(({ command }) => ({
+export default defineConfig({
   plugins: [react()],
-  base: command === 'build' ? `/${REPO}/` : '/',
+  base,
   server: { port: 5175, open: true },
-}));
+});
