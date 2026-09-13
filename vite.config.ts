@@ -1,12 +1,11 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-// With a custom domain (e.g. led.techwizer.in) the site is served from root.
-// Set VITE_BASE=/ACTIVE-LED-SIMULATOR/ if you go back to the github.io URL.
-const base = process.env.VITE_BASE ?? '/';
-
+// Serve from root — works for custom domains (e.g. led.techwizer.in).
+// If you ever go back to the raw github.io/ACTIVE-LED-SIMULATOR/ URL,
+// change base to '/ACTIVE-LED-SIMULATOR/'.
 export default defineConfig({
   plugins: [react()],
-  base,
+  base: '/',
   server: { port: 5175, open: true },
 });
