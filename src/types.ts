@@ -23,4 +23,5 @@ export interface SimulatorConfig {
   showDiodeMask: boolean;
   brightness: number; // 0..2
   glow: number; // 0..1
+  autoFit: boolean;
 }

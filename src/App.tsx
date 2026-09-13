@@ -1,25 +1,48 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ControlPanel } from './components/ControlPanel';
 import { LEDCanvas } from './components/LEDCanvas';
-import { DEFAULT_PRESET_ID, PITCH_PRESETS, gcd } from './presets';
+import { DEFAULT_PRESET_ID, PITCH_PRESETS, autoFitModules, gcd } from './presets';
 import type { SimulatorConfig } from './types';
 
-const initial: SimulatorConfig = {
-  presetId: DEFAULT_PRESET_ID,
-  modulesWide: 7,
-  modulesHigh: 8,
-  viewingDistanceM: 8,
-  sourceUrl: '',
-  sourceMode: 'testpattern',
-  useCorsProxy: false,
-  showDiodeMask: true,
-  brightness: 1.1,
-  glow: 0.35,
-};
+function initialFor(presetId: string): SimulatorConfig {
+  const p = PITCH_PRESETS.find((x) => x.id === presetId) ?? PITCH_PRESETS[0];
+  const fit = autoFitModules(p.modulePixelsW, p.modulePixelsH, p.moduleWidthMm, p.moduleHeightMm, p.pitch);
+  return {
+    presetId,
+    modulesWide: fit.w,
+    modulesHigh: fit.h,
+    viewingDistanceM: Math.max(3, p.pitch * 1.5),
+    sourceUrl: '',
+    sourceMode: 'testpattern',
+    useCorsProxy: false,
+    showDiodeMask: true,
+    brightness: 1.1,
+    glow: 0.35,
+    autoFit: true,
+  };
+}
 
 export default function App() {
-  const [config, setConfigRaw] = useState<SimulatorConfig>(initial);
+  const [config, setConfigRaw] = useState<SimulatorConfig>(() => initialFor(DEFAULT_PRESET_ID));
+  const lastPresetRef = useRef(config.presetId);
+
   const setConfig = (patch: Partial<SimulatorConfig>) => setConfigRaw((c) => ({ ...c, ...patch }));
+
+  // When pitch changes and auto-fit is on, recompute modules
+  useEffect(() => {
+    if (config.presetId === lastPresetRef.current) return;
+    lastPresetRef.current = config.presetId;
+    if (!config.autoFit) return;
+    const p = PITCH_PRESETS.find((x) => x.id === config.presetId);
+    if (!p) return;
+    const fit = autoFitModules(p.modulePixelsW, p.modulePixelsH, p.moduleWidthMm, p.moduleHeightMm, p.pitch);
+    setConfigRaw((c) => ({
+      ...c,
+      modulesWide: fit.w,
+      modulesHigh: fit.h,
+      viewingDistanceM: Math.max(3, p.pitch * 1.5),
+    }));
+  }, [config.presetId, config.autoFit]);
 
   const preset = useMemo(
     () => PITCH_PRESETS.find((p) => p.id === config.presetId) ?? PITCH_PRESETS[0],
@@ -37,7 +60,7 @@ export default function App() {
   }, [totalPxW, totalPxH]);
 
   return (
-    <div className="w-full h-full flex flex-col lg:flex-row">
+    <div className="w-screen h-screen overflow-hidden flex flex-col lg:flex-row">
       <ControlPanel
         config={config}
         setConfig={setConfig}

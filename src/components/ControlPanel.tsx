@@ -1,5 +1,5 @@
 import type { PitchPreset, SimulatorConfig, SourceMode } from '../types';
-import { PITCH_PRESETS } from '../presets';
+import { PITCH_PRESETS, autoFitModules } from '../presets';
 
 interface Props {
   config: SimulatorConfig;
@@ -130,7 +130,7 @@ export function ControlPanel(p: Props) {
               min={1}
               max={80}
               value={config.modulesWide}
-              onChange={(e) => setConfig({ modulesWide: Math.max(1, Math.min(80, Number(e.target.value) || 1)) })}
+              onChange={(e) => setConfig({ modulesWide: Math.max(1, Math.min(80, Number(e.target.value) || 1)), autoFit: false })}
               className="w-full bg-black/50 border border-slate-700 rounded px-2 py-1.5 text-xs font-mono focus:border-cyan-400 outline-none"
             />
           </Field>
@@ -140,13 +140,34 @@ export function ControlPanel(p: Props) {
               min={1}
               max={40}
               value={config.modulesHigh}
-              onChange={(e) => setConfig({ modulesHigh: Math.max(1, Math.min(40, Number(e.target.value) || 1)) })}
+              onChange={(e) => setConfig({ modulesHigh: Math.max(1, Math.min(40, Number(e.target.value) || 1)), autoFit: false })}
               className="w-full bg-black/50 border border-slate-700 rounded px-2 py-1.5 text-xs font-mono focus:border-cyan-400 outline-none"
             />
           </Field>
         </div>
 
-        <div className="text-[11px] text-slate-400 mt-1">
+        <div className="flex items-center justify-between mt-1">
+          <label className="flex items-center gap-2 text-xs text-slate-300 select-none">
+            <input
+              type="checkbox"
+              checked={config.autoFit}
+              onChange={(e) => setConfig({ autoFit: e.target.checked })}
+              className="accent-cyan-400"
+            />
+            Auto-fit modules
+          </label>
+          <button
+            onClick={() => {
+              const fit = autoFitModules(preset.modulePixelsW, preset.modulePixelsH, preset.moduleWidthMm, preset.moduleHeightMm, preset.pitch);
+              setConfig({ modulesWide: fit.w, modulesHigh: fit.h, autoFit: true });
+            }}
+            className="text-[10px] px-2 py-1 rounded border border-cyan-500/40 text-cyan-300 hover:bg-cyan-500/10"
+          >
+            Fit 16:9
+          </button>
+        </div>
+
+        <div className="text-[11px] text-slate-400 mt-2">
           Module: <span className="font-mono text-slate-200">{preset.moduleWidthMm}×{preset.moduleHeightMm} mm</span> ·
           <span className="font-mono text-slate-200"> {preset.modulePixelsW}×{preset.modulePixelsH} px</span>
         </div>
